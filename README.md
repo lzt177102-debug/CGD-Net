@@ -1,2 +1,15 @@
-# CGD-Net
-Example data includes land cover data, Landscan population data, nighttime light data, remote sensing data, and POI data; config is the configuration file; src is the training file.
+CGD-Net/
+├─ Example data/                  # Example input datasets
+├─ config/                        # Configuration files for experiments
+├─ cross_atten/                   # Cross-attention mechanism modules
+├─ pretrained_weights/           # Pretrained model weights
+├─ src/                           # Core source code (models, training logic)
+├─ Ablation Experiment 1.png      # Ablation study results
+├─ Ablation Experiment 2.png
+├─ Comparative experiment.png     # Comparative experiment results
+├─ Visualization results.png      # Visualization outputs
+├─ Charting.py                    # Result analysis and plotting script
+├─ RSGCN_DataLoader.py            # Custom data loader for spatial data
+├─ trainer.py                     # Main training entry
+└─ README.md
+
