@@ -1,0 +1,77 @@
+# GraphGDP 双回归模型训练配置文件
+# 对应 TrainConfig 类的所有参数，保持结构一致、注释清晰
+
+# ==================== 数据路径配置 ====================
+gdp_file_path: "./dataset/分县GDP统计.xlsx"
+features_dir: "./dataset/extracted_features"
+output_dir: "./result"
+
+# 预训练模型加载配置
+load_pretrained: false  # 改为True开启加载
+pretrained_model_path: "./pretrained_weights/baseline_88.pth"  # 你的模型权重路径
+multi_gpu: False  # 无需多GPU则保持False
+# ==================== 数据构建参数 ====================
+patch_size: 16
+lap_pe_k: 12  # 与模型 LapPE 维度一致
+stride: 16
+max_counties: null  # 调试时可减小，正式训练设为 null（对应Python的None）
+min_nodes_threshold: 30
+
+# ==================== 模型配置参数（与 GraphGDP 对应） ====================
+model_cls: "GraphGDP"  # 核心新增：指定模型类型
+
+channels: 128
+pe_dim: 12  # 与 LapPE 维度一致
+num_layers: 4
+model_type: "mamba"  # 可选：'gine'、'mamba'、'only_mamba'
+shuffle_ind: 0
+d_state: 16
+d_conv: 4
+order_by_degree: true
+use_lap_pe: true
+use_rw_pe: false
+use_grid_pe: false
+# node_dim: 422  # 与数据集节点特征维度一致
+# node_dim: 407  # 去掉poi
+# node_dim: 386 # 去掉poi 土地利用
+# node_dim: 385 # 去掉poi 土地利用 人口
+node_dim: 384 # 去掉poi 土地利用 人口 灯光
+edge_dim: 1
+if_pool: true
+pool_type: "attention"  # 新增：全局池化类型，可选 'add'/'attention'/'mean'（推荐 'attention'）
+drop: 0.2
+node_label_dim: 2  # 节点标签：grid_gdp + grid_gdp_log
+global_label_dim: 2  # 全局标签：patch_gdp + patch_log_gdp
+
+# ==================== 训练超参数 ====================
+batch_size: 64
+num_workers: 0  # Windows 设为 0，Linux 可设为 2-4
+epochs: 200
+learning_rate: 0.001  # 对应Python的1e-3
+weight_decay: 0.00001  # 对应Python的1e-5（L2 正则化）
+step_size: 30  # 学习率调度器步长
+gamma: 0.5  # 学习率衰减系数
+patience: 50  # 早停耐心值
+random_state: 42
+val_size: 0.2  # 数据集划分比例
+
+# ==================== 损失函数权重（平衡节点级与全局级任务） ====================
+node_loss_weight: 0.5  # 节点级任务权重
+global_loss_weight: 0.5  # 全局级任务权重
+consistency_weight: 0.5  # 一致性损失权重，可根据训练效果调参
+
+# ==================== 新增：学习率策略配置（兼容代码动态加载，保留原有 step_size/gamma 参数） ====================
+# 学习率策略类型（可选：ReduceLROnPlateau / StepLR，默认使用 StepLR 以兼容你原有 step_size/gamma）
+lr_scheduler_type: "ReduceLROnPlateau"
+# ReduceLROnPlateau 专属配置（切换策略时可修改，不影响原有参数）
+lr_scheduler_mode: "max"
+lr_scheduler_factor: 0.7
+lr_scheduler_patience: 10
+lr_scheduler_min_lr: 1e-5
+# StepLR 通用配置（复用你原有 step_size/gamma，无需额外修改）
+lr_scheduler_step_size: 30
+lr_scheduler_gamma: 0.5
+# 学习率调度器通用参数（是否打印衰减日志）
+lr_scheduler_verbose: true
+
+

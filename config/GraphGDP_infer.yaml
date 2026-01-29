@@ -1,0 +1,69 @@
+# ==================== 模型配置参数（与 GraphGDP 对应） ====================
+model_cls: "GraphGDP"  # 核心新增：指定模型类型
+
+senet_reduction: 16    # 可选：仅GraphGDP_SENet生效
+channels: 128
+pe_dim: 12  # 与 LapPE 维度一致
+num_layers: 4
+model_type: "mamba"  # 可选：'gine'、'mamba'、'only_mamba'
+shuffle_ind: 0
+d_state: 16
+d_conv: 4
+order_by_degree: true
+use_lap_pe: true
+use_rw_pe: false
+use_grid_pe: false
+# node_dim: 422  # 与数据集节点特征维度一致
+node_dim: 407  # 去掉poi
+# node_dim: 386 # 去掉poi 土地利用
+# node_dim: 385 # 去掉poi 土地利用 人口
+# node_dim: 384 # 去掉poi 土地利用 人口 灯光
+edge_dim: 1
+if_pool: true
+pool_type: "attention"  # 新增：全局池化类型，可选 'add'/'attention'/'mean'（推荐 'attention'）
+drop: 0.2
+node_label_dim: 2  # 节点标签：grid_gdp + grid_gdp_log
+global_label_dim: 2  # 全局标签：patch_gdp + patch_log_gdp
+
+# 数据相关配置（与训练一致）
+patch_size: 16
+lap_pe_k: 12
+stride: 16
+min_nodes_threshold: 10
+gdp_file_path: "./dataset/分县GDP统计.xlsx"
+features_dir: "./dataset/val/extracted_features"
+#20260109_131448
+# 推理专用配置（新增）
+checkpoint_path: "./result/exp_20260126_193001/models/best_model.pth"  # 训练好的模型权重
+scaler_path: "./pretrained_weights/407.pth"  # 训练时保存的scaler（保证标准化一致）
+infer_county: "321081"  # 要推理的县名（需与数据中县名一致）
+rs_tif_path: "./dataset/val/Remote_sensing/321081.tif"  # 该县的日间遥感TIFF
+
+
+# # 配置参数
+# # 特征提取相关参数
+# model_name: "vit_relpos_small_patch16_224"
+# model_path: "./model/pre_training_model/vit_relpos_small_patch16_224.pth"
+# remote_sensing_dir: "./dataset/Remote_sensing"
+# nl_dir: "./dataset/NL"
+# landuse_dir: "./dataset/Land_use"
+# population_dir: "./dataset/LandScan"
+# output_dir: "./dataset/val/extracted_features"
+# poi_dir: "./dataset/poi_excel"  # POI数据目录
+
+#额外数据
+
+model_name: "vit_relpos_small_patch16_224"
+model_path: "./model/pre_training_model/vit_relpos_small_patch16_224.pth"
+remote_sensing_dir: "./dataset/val/Remote_sensing"
+nl_dir: "./dataset/val/NL"
+landuse_dir: "./dataset/val/Land_use"
+population_dir: "./dataset/val/LandScan"
+output_dir: "./dataset/val/extracted_features"
+poi_dir: "./dataset/poi_excel"  # POI数据目录
+infer_batch_size: 8
+num_workers: 0
+# node_size: 30  # 每个节点对应像素尺寸（与训练一致）
+infer_output_dir: "./infer_results/数据消融"  # 推理结果输出目录
+multi_gpu: False
+
